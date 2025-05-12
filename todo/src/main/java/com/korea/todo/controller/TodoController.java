@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,9 +40,9 @@ public class TodoController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> createTodo(@RequestBody TodoDTO dto) {
+	public ResponseEntity<?> createTodo(@AuthenticationPrincipal String userId, @RequestBody TodoDTO dto) {
 		try {
-			String tempraryUserId = "temporary-user"; // 임시 유저id
+			//String tempraryUserId = "temporary-user"; // 임시 유저id
 
 			// TodoDTO객체를 TodoEntity객체로 변환한다.
 			TodoEntity entity = TodoDTO.toEntity(dto);
@@ -53,7 +54,7 @@ public class TodoController {
 			// 임시 유저id를 설정해준다. 이 부분은 4장 인증과 인가에서 수정할 예정이다.
 			// 지금은 인증과 인가 기능이 없으므로 한 유저(temporary-user)만 로그인 없이 사용 가능한
 			// 애플리케이션인 셈이다.
-			entity.setUserId(tempraryUserId);
+			entity.setUserId(userId);
 
 			// 서비스 레이어의 create 메서드를 호출하여, TodoEntity를 데이터베이스에 저장하는 작업을 수행한다.
 			// 이 메서드는 저장된 TodoEntity 객체들을 저장한 리스트를 반환한다.
@@ -85,11 +86,11 @@ public class TodoController {
 		}
 	}
 	@GetMapping
-	public ResponseEntity<?> retrieveTodoList(){
-		String temporaryUserId = "temporary-user";
+	public ResponseEntity<?> retrieveTodoList(@AuthenticationPrincipal String userId){
+		//String temporaryUserId = "temporary-user";
 		
 		//서비스레이어의 retrieve메서드를 이용해 Todo리스트를 반환받아 entities에 저장한다.
-		List<TodoEntity> entities = service.retrieve(temporaryUserId);
+		List<TodoEntity> entities = service.retrieve(userId);
 		
 		//자바 스트림을 이용해 반환된 엔티티 리스트를 TodoDTO 리스트로 변환한다.
 		List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
@@ -101,13 +102,13 @@ public class TodoController {
 	}	
 	
 	@PutMapping
-	public ResponseEntity<?> updateTodo(@RequestBody TodoDTO dto){
-		String temporaryUserId = "temporary-user";
+	public ResponseEntity<?> updateTodo(@AuthenticationPrincipal String userId,@RequestBody TodoDTO dto){
+		//String temporaryUserId = "temporary-user";
 		
 		//dto를 Entity로 변환한다.
 		TodoEntity entity = TodoDTO.toEntity(dto);
 		
-		entity.setUserId(temporaryUserId);
+		entity.setUserId(userId);
 		
 		//서비스레이어의 update메서드를 이용해 entity를 업데이트한다.
 		List<TodoEntity> entities = service.update(entity);
@@ -122,10 +123,10 @@ public class TodoController {
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<?> deleteTodo(@RequestBody TodoDTO dto){
+	public ResponseEntity<?> deleteTodo(@AuthenticationPrincipal String userId, @RequestBody TodoDTO dto){
 		try {
 			
-			String tempraryUserId = "temporary-user"; //임시 유저id
+			//tempraryUserId = "temporary-user"; //임시 유저id
 			
 			//TodoDTO객체를 TodoEntity객체로 변환한다.
 			TodoEntity entity = TodoDTO.toEntity(dto);
@@ -134,7 +135,7 @@ public class TodoController {
 			//임시 유저id를 설정해준다. 이 부분은 4장 인증과 인가에서 수정할 예정이다.
 			//지금은 인증과 인가 기능이 없으므로 한 유저(temporary-user)만 로그인 없이 사용 가능한
 			//애플리케이션인 셈이다.
-			entity.setUserId(tempraryUserId);
+			entity.setUserId(userId);
 			
 			//서비스 레이어의 create 메서드를 호출하여, TodoEntity를 데이터베이스에 저장하는 작업을 수행한다.
 			//이 메서드는 저장된 TodoEntity 객체들을 저장한 리스트를 반환한다.

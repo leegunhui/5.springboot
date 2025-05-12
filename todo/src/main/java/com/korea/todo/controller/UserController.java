@@ -2,6 +2,8 @@ package com.korea.todo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,16 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.korea.todo.dto.UserDTO;
 import com.korea.todo.model.ResponseDTO;
 import com.korea.todo.model.UserEntity;
+import com.korea.todo.security.TokenProvider;
 import com.korea.todo.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
-import security.TokenProvider;
+
 
 @Slf4j // Lombok을 사용하여 로그를 남길 수 있는 log 객체를 자동으로 생성한다.
 @RestController // 이 클래스가 RESTful 웹서비스의 컨트롤러 역할을 한다는 것을 나타낸다.
 @RequestMapping("/auth") // 이 컨트롤러의 기본 URI 경로가 "/auth"로 설정된다.
 public class UserController {
-
+	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	
     @Autowired // UserService 타입의 빈을 자동으로 주입받는다.
     private UserService userService; // 사용자 관련 비즈니스 로직을 처리하는 서비스 클래스.
     
@@ -63,7 +67,8 @@ public class UserController {
         // 요청 본문으로 전달된 UserDTO의 username과 password를 기반으로 유저를 조회한다.
         UserEntity user = userService.getByCredentials(
                         userDTO.getUsername(), // UserDTO에서 username 값을 가져온다.
-                        userDTO.getPassword()); // UserDTO에서 password 값을 가져온다.
+                        userDTO.getPassword(), // UserDTO에서 password 값을 가져온다.
+                        passwordEncoder); 
 
         // 사용자가 존재하면
         if (user != null) {

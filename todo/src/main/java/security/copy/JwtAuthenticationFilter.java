@@ -1,4 +1,4 @@
-package security;
+package security.copy;
 
 import java.io.IOException;
 
@@ -75,7 +75,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 				//현재 요청에 대한 인증 정보를 SecurityContext에 저장하여 스프링 시큐리티가 
 				//해당 사용자를 인증된 사용자로 인식하게 하는 메서드다.
 				securityContext.setAuthentication(authentication);
-
+				
+				//다른 api에서 SecurityContextHolder.getContext()를 통해서
+				//방금 등록한 정보를 얻을 수 있다
+				
 				//인증을 완료한 후, 이 메서드를 사용하여 인증된 사용자 정보를 저장할 수 있다.
 				SecurityContextHolder.setContext(securityContext);
 			}
