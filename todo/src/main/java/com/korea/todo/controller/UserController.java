@@ -37,7 +37,7 @@ public class UserController {
             // UserDTO를 기반으로 UserEntity 객체를 생성한다.
             UserEntity user = UserEntity.builder()
                             .username(userDTO.getUsername()) // UserDTO에서 username 값을 가져온다.
-                            .password(userDTO.getPassword()) // UserDTO에서 password 값을 가져온다.
+                            .password(passwordEncoder.encode(userDTO.getPassword())) // UserDTO에서 password 값을 가져온다.
                             .build(); // UserEntity 객체를 빌드한다.
 
             // UserService를 이용해 새로 만든 UserEntity를 데이터베이스에 저장한다.
